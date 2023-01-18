@@ -1,0 +1,3 @@
+.vscode
+src/main/java/com/joaovanzuita/infra/db/DataBaseConnection.properties
+target
