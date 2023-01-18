@@ -35,7 +35,7 @@ public class ExpensesDao implements IExpensesDao {
 
     final String sql = "INSERT INTO expenses (description, value, date, category) VALUES (?, ?, ?, ?)";
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -57,11 +57,11 @@ public class ExpensesDao implements IExpensesDao {
   }
 
   @Override
-  public Expense update(Expense expense) throws SQLException{
+  public Expense update(Expense expense) throws SQLException {
 
     final String sql = "UPDATE expenses SET description = ?, value = ?, date = ?, category = ? WHERE id = ?";
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -78,42 +78,41 @@ public class ExpensesDao implements IExpensesDao {
   }
 
   @Override
-  public void delete(Long id) throws SQLException{
+  public void delete(Long id) throws SQLException {
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement("DELETE FROM expenses WHERE id = ?");
       statement.setLong(1, id);
 
       statement.execute();
 
-    }catch(SQLException e) {
+    } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
   @Override
-  public Optional<Expense> findById(Long id) throws SQLException{
+  public Optional<Expense> findById(Long id) throws SQLException {
 
     Expense expense = null;
 
     final String sql = "SELECT * FROM expenses WHERE id = ?";
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       statement.setLong(1, id);
 
       ResultSet result = statement.executeQuery();
 
-      if(result.next()){
+      if (result.next()) {
         String description = result.getString("description");
         LocalDate date = result.getDate("date").toLocalDate();
         double value = result.getDouble("value");
         Category category = Category.valueOf(result.getString("category"));
 
-        expense = new Expense(description, date, value, category);
-        expense.setId(id);
+        expense = new Expense(id, description, date, value, category);
       }
     }
 
@@ -121,19 +120,19 @@ public class ExpensesDao implements IExpensesDao {
   }
 
   @Override
-  public List<Expense> findAll() throws SQLException{
+  public List<Expense> findAll() throws SQLException {
 
     List<Expense> expenses = new ArrayList<>();
 
     final String sql = "SELECT * FROM expenses";
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
       ResultSet result = statement.executeQuery();
 
-      while(result.next()){
+      while (result.next()) {
         Long id = result.getLong("id");
         String description = result.getString("description");
         LocalDate date = result.getDate("date").toLocalDate();
@@ -151,28 +150,27 @@ public class ExpensesDao implements IExpensesDao {
   }
 
   @Override
-  public List<Expense> findByCategory(String categoryName) throws SQLException{
+  public List<Expense> findByCategory(String categoryName) throws SQLException {
 
     List<Expense> expenses = new ArrayList<>();
 
     final String sql = "SELECT * FROM expenses WHERE category = ?";
 
-    try(Connection connection = DataSource.getConnection()){
+    try (Connection connection = DataSource.getConnection()) {
 
       PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, categoryName);
 
       ResultSet result = statement.executeQuery();
 
-      while(result.next()){
+      while (result.next()) {
         Long id = result.getLong("id");
         String description = result.getString("description");
         LocalDate date = result.getDate("date").toLocalDate();
         double value = result.getDouble("value");
         Category category = Category.valueOf(result.getString("category"));
 
-        Expense expense = new Expense(description, date, value, category);
-        expense.setId(id);
+        Expense expense = new Expense(id, description, date, value, category);
 
         expenses.add(expense);
       }
